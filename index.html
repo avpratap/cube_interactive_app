@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cube Interactive App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <canvas id="cube-canvas" width="600" height="480"></canvas>
+        <div class="controls">
+            <button id="enable-face" onclick="enableFaceDetection()">Enable Face Detection</button>
+            <button id="enable-hand" onclick="enableHandDetection()">Enable Hand Detection</button>
+            <button id="reset-cube" onclick="resetCube()">Reset Cube</button>
+            <p>
+                <span>Device orientation: <span id="orientation-status">--</span></span><br>
+                <span>Face detection: <span id="face-status">--</span></span><br>
+                <span>Hand detection: <span id="hand-status">--</span></span>
+            </p>
+        </div>
+        <!-- <video id="video" width="320" height="240" autoplay muted style="display:none;"></video> -->
+         <video id="video" width="320" height="240" autoplay muted playsinline tabindex="-1"></video>
+
+    </div>
+    <!-- Libraries: load locally -->
+    <script src="js/tf.min.js"></script>
+    <script src="js/three.min.js"></script>
+    <script src="js/face-api.min.js"></script>
+    <script src="js/handtrack.min.js"></script>
+    <!-- Main logic -->
+    <script src="js/main.js"></script>
+</body>
+</html>
