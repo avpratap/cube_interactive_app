@@ -6,6 +6,7 @@ let handDetectionActive = false;
 let handModel = null;
 let video;
 
+
 // --- 1. THREE.JS CUBE ---------------
 function initThreeJS() {
     // Scene and Camera
@@ -44,6 +45,20 @@ function initThreeJS() {
     animate();
 }
 
+
+// --- Webcam video on page load ---------------
+async function startWebcam() {
+    try {
+        video = document.getElementById('video');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        await video.play();
+    } catch (err) {
+        alert('Cannot access webcam: ' + err);
+    }
+}
+
+
 // --- 2. DEVICE ORIENTATION ON MOBILE ---------------
 function initDeviceOrientation() {
     if (window.DeviceOrientationEvent) {
@@ -64,6 +79,7 @@ function initDeviceOrientation() {
     }
 }
 
+
 // --- 3. FACE DETECTION -------------------
 async function enableFaceDetection() {
     const button = document.getElementById('enable-face');
@@ -78,10 +94,15 @@ async function enableFaceDetection() {
             faceapi.nets.faceExpressionNet.loadFromUri('models')
         ]);
         video = document.getElementById('video');
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
-        await video.play();
+        // If webcam is not already started, start it
+        if (!video.srcObject) {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            await video.play();
+        }
         video.addEventListener('playing', onFaceVideoPlaying, { once: true });
+        // If already playing, start detection immediately
+        if (video.readyState >= 3) onFaceVideoPlaying();
     } catch(err) {
         updateStatus('face-status', "Setup Failed");
         button.innerText = "Enable Face Detection";
@@ -89,6 +110,7 @@ async function enableFaceDetection() {
         alert("Face detection model or camera load failed!\n" + err);
     }
 }
+
 function onFaceVideoPlaying() {
     faceDetectionActive = true;
     detectFaces();
@@ -97,6 +119,7 @@ function onFaceVideoPlaying() {
     button.innerText = "Disable Face Detection";
     button.onclick = disableFaceDetection;
 }
+
 async function detectFaces() {
     if (!faceDetectionActive) return;
     try {
@@ -122,6 +145,7 @@ async function detectFaces() {
     }
     if (faceDetectionActive) requestAnimationFrame(detectFaces);
 }
+
 function disableFaceDetection() {
     faceDetectionActive = false;
     if (video && video.srcObject) {
@@ -133,6 +157,7 @@ function disableFaceDetection() {
     button.innerText = "Enable Face Detection";
     button.onclick = enableFaceDetection;
 }
+
 
 // --- 4. HAND DETECTION -------------------
 async function enableHandDetection() {
@@ -160,6 +185,7 @@ async function enableHandDetection() {
         alert("Hand detection load failed!\n" + e);
     }
 }
+
 function onHandVideoPlaying() {
     handDetectionActive = true;
     detectHand();
@@ -168,6 +194,7 @@ function onHandVideoPlaying() {
     button.innerText = "Disable Hand Detection";
     button.onclick = disableHandDetection;
 }
+
 async function detectHand() {
     if (!handDetectionActive) return;
     try {
@@ -189,6 +216,7 @@ async function detectHand() {
     }
     if (handDetectionActive) setTimeout(detectHand, 150);
 }
+
 function disableHandDetection() {
     handDetectionActive = false;
     if (video && video.srcObject) {
@@ -201,6 +229,7 @@ function disableHandDetection() {
     button.onclick = enableHandDetection;
 }
 
+
 // --- 5. UTILITIES -------------------
 function updateStatus(id, text) {
     const elem = document.getElementById(id);
@@ -210,10 +239,12 @@ function resetCube() {
     cube.rotation.set(0,0,0);
 }
 
+
 // --- 6. INIT ------------------------
 window.onload = () => {
     initThreeJS();
     initDeviceOrientation();
     updateStatus('face-status','Disabled');
     updateStatus('hand-status','Disabled');
+    startWebcam(); // Start webcam and show video on page load
 };

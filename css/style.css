@@ -39,12 +39,14 @@ button {
 button:hover { background: #519bfc; }
 
 #video {
-    width: 0 !important;
-    height: 0 !important;
+    width: 320px !important;
+    height: 240px !important;
     display: block !important;
-    position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
-    pointer-events: none;
-    opacity: 0;
+    margin: 20px auto !important;
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    pointer-events: auto;
+    opacity: 1;
 }
+
