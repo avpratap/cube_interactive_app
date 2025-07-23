@@ -1,11 +1,13 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Cube Interactive App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div class="container">
         <canvas id="cube-canvas" width="600" height="480"></canvas>
@@ -19,17 +21,186 @@
                 <span>Hand detection: <span id="hand-status">--</span></span>
             </p>
         </div>
-        <!-- <video id="video" width="320" height="240" autoplay muted style="display:none;"></video> -->
-         <video id="video" width="320" height="240" autoplay muted playsinline tabindex="-1"></video>
+        <video id="video" width="320" height="240" autoplay muted playsinline tabindex="-1"></video>
 
     </div>
-    <!-- Libraries: load locally -->
-    <!-- <script src="js/tf.min.js"></script> -->
     <script src="js/three.min.js"></script>
     <script src="js/face-api.min.js"></script>
-    <!-- <script src="js/handtrack.min.js"></script> -->
-     <script src="https://cdn.jsdelivr.net/npm/handtrackjs@0.0.13/dist/handtrack.min.js"></script>
-    <!-- Main logic -->
+    <script src="https://cdn.jsdelivr.net/npm/handtrackjs@0.0.13/dist/handtrack.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html> -->
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Interactive 3D Cube | Real-time Detection</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-cube"></i>
+            <h1>AI Interactive Cube</h1>
+        </div>
+        <div class="connection-status">
+            <span class="status-indicator" id="connection-status"></span>
+            <span>System Status</span>
+        </div>
+    </header>
+
+    <!-- Main Application -->
+    <div class="app-container">
+        <!-- Video Feed - Top Left Corner -->
+        <div class="video-container">
+            <video id="video" width="240" height="180" autoplay muted playsinline></video>
+            <div class="video-overlay">
+                <span class="video-label">Live Feed</span>
+                <div class="recording-indicator" id="recording-dot" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- Main Cube Display -->
+        <div class="cube-container">
+            <canvas id="cube-canvas" width="600" height="480"></canvas>
+            <div class="cube-info">
+                <span>Drag to rotate manually • Face & Hand detection available</span>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-cogs"></i> Detection Controls</h2>
+            </div>
+            
+            <div class="control-grid">
+                <!-- Face Detection -->
+                <div class="control-item">
+                    <div class="control-info">
+                        <div class="control-icon face-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="control-text">
+                            <h3>Face Detection</h3>
+                            <p>Track facial movements</p>
+                        </div>
+                    </div>
+                    <button id="enable-face" class="control-btn" onclick="toggleFaceDetection()">
+                        <span class="btn-text">Enable</span>
+                        <i class="fas fa-play btn-icon"></i>
+                    </button>
+                    <div class="status-display">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value" id="face-status">Disabled</span>
+                    </div>
+                </div>
+
+                <!-- Hand Detection -->
+                <div class="control-item">
+                    <div class="control-info">
+                        <div class="control-icon hand-icon">
+                            <i class="fas fa-hand-paper"></i>
+                        </div>
+                        <div class="control-text">
+                            <h3>Hand Detection</h3>
+                            <p>Track hand gestures</p>
+                        </div>
+                    </div>
+                    <button id="enable-hand" class="control-btn" onclick="toggleHandDetection()">
+                        <span class="btn-text">Enable</span>
+                        <i class="fas fa-play btn-icon"></i>
+                    </button>
+                    <div class="status-display">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value" id="hand-status">Disabled</span>
+                    </div>
+                </div>
+
+                <!-- Device Orientation -->
+                <div class="control-item">
+                    <div class="control-info">
+                        <div class="control-icon orientation-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="control-text">
+                            <h3>Device Orientation</h3>
+                            <p>Gyroscope control</p>
+                        </div>
+                    </div>
+                    <button id="enable-orientation" class="control-btn" onclick="toggleOrientation()">
+                        <span class="btn-text">Enable</span>
+                        <i class="fas fa-play btn-icon"></i>
+                    </button>
+                    <div class="status-display">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value" id="orientation-status">Disabled</span>
+                    </div>
+                </div>
+
+                <!-- Reset Control -->
+                <div class="control-item reset-item">
+                    <div class="control-info">
+                        <div class="control-icon reset-icon">
+                            <i class="fas fa-undo-alt"></i>
+                        </div>
+                        <div class="control-text">
+                            <h3>Reset Cube</h3>
+                            <p>Return to default position</p>
+                        </div>
+                    </div>
+                    <button id="reset-cube" class="control-btn reset-btn" onclick="resetCube()">
+                        <span class="btn-text">Reset</span>
+                        <i class="fas fa-refresh btn-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Monitor -->
+        <div class="performance-panel">
+            <h3><i class="fas fa-chart-line"></i> Performance</h3>
+            <div class="metrics">
+                <div class="metric">
+                    <span class="metric-label">FPS:</span>
+                    <span class="metric-value" id="fps-counter">60</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Detection Rate:</span>
+                    <span class="metric-value" id="detection-rate">--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>Initializing AI Models...</h3>
+            <p id="loading-text">Please wait while we load the detection models</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/three.min.js"></script>
+    <script src="js/face-api.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handtrackjs@0.0.13/dist/handtrack.min.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
